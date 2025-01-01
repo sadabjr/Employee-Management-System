@@ -1,10 +1,41 @@
 import axios from "axios";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:5000/api/auth/login",
+  //       { email, password }
+  //     );
+  //     if (response.data.success) {
+  //       login(response.data.user);
+  //       localStorage.setItem("token", response.data.token);
+  //       if (response.data.user.role === "admin") {
+  //         navigate("/admin-dashboard");
+  //       } else {
+  //         navigate("/employee-dashboard");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     if (error.response && error.response.data.success) {
+  //       setError(error.response.data.error);
+  //     } else {
+  //       setError(error.response.data.error);
+  //     }
+  //   }
+  //   console.log("Email:", email);
+  //   console.log("Password:", password);
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,19 +44,24 @@ const Login = () => {
         "http://localhost:5000/api/auth/login",
         { email, password }
       );
-      if (response.data.success) {
-        alert("Sucessfully logged in");
+      if (response.data.sucess) {
+        login(response.data.user);
+        localStorage.setItem("token", response.data.token);
+        if (response.data.user.role === "admin") {
+          navigate("/admin-dashboard");
+        } else {
+          navigate("/employee-dashboard");
+        }
       }
     } catch (error) {
-      if (error.response && error.response.data.success) {
+      if (error.response && error.response.data.error) {
         setError(error.response.data.error);
       } else {
-        setError(error.response.data.error);
+        setError("Something went wrong.");
       }
     }
-    console.log("Email:", email);
-    console.log("Password:", password);
   };
+  
   return (
     <div className="flex items-center justify-center min-h-screen px-4 bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
